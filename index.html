@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Задания на верстку</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width">
+
+        <link rel="stylesheet" href="normalize.css">
+        <link rel="stylesheet" href="main.css">   
+    </head>
+    <body>      
+
+        <div class="header-container">
+            <header class="wrapper clearfix">
+                <h1 class="title">Задания на верстку</h1>
+            </header>
+        </div>
+
+        <div class="main-container">
+            <div class="main wrapper clearfix">
+
+                <div class="content-wrapper">
+                    <article class="main-content">
+                        <section>
+                            <h2 class="content-title">Сверстайте контрол оценки и показа рейтинга.</h2>
+                            <p>Практически все наши контролы должны быть очень гибкими к окружающему пространству, должны уметь располагаться на любом фоне и при желании легко менять свой "скин". Учитывайте это в этом и других заданиях. Обратите внимание, что контрол должен не только выставлять оценку, но и показывать текущую.</p>
+                            <div class="star-rating modificator">
+                                <div class="star-rating-container">
+                                    <input type="radio" name="rating" id="star1" value="1" class="star-rating-input" />
+                                    <label for="star1" class="star-rating-label">&#9733;</label>
+                                    <input type="radio" name="rating" id="star2" value="2" class="star-rating-input" />
+                                    <label for="star2" class="star-rating-label">&#9733;</label>
+                                    <input type="radio" name="rating" id="star3" value="3" class="star-rating-input" />
+                                    <label for="star3" class="star-rating-label">&#9733;</label>
+                                    <input type="radio" name="rating" id="star4" value="4" class="star-rating-input" />
+                                    <label for="star4" class="star-rating-label">&#9733;</label>
+                                    <input type="radio" name="rating" id="star5" value="5" class="star-rating-input" />
+                                    <label for="star5" class="star-rating-label">&#9733;</label>
+                                </div>
+                            </div>
+                        </section>
+                        <section>
+                            <h2 class="content-title">Сверстайте прогресс-бар</h2>
+                            <div class="progress-bar modificator">
+                                <div class="progress-bar-container">
+                                    <div class="progress-bar-complete" data-complete="30%" style="width: 30%;"></div>
+                                </div>
+                            </div>
+                        </section>
+                        <section>
+                            <h2 class="content-title">Сверстайте кнопку</h2>
+                            <p>Пожалуйста, учитывайте, что эта кнопка должна быть кнопкой-на-все-случаи-жизни. Сделайте несколько примеров кнопки в различном окружении и различном html-представлении.</p>
+                            <div>
+                                <button class="button modificator1">Кнопка</button>
+                            </div>
+                            <form>
+                                <input class="button modificator2" type="button" value="Кнопка инлайн" />
+                                <input class="button modificator2" type="button" value="Кнопка инлайн" />
+                                <input class="button modificator2" type="submit" value="Кнопка submit" />
+                            </form>
+                            <div>
+                                А это небольшой текст про красивую <button class="button modificator3">Кнопка</button>, которая мечтала быть универсальной.
+                            </div>
+                        </section>
+                        <section>
+                            <h2 class="content-title">Сверстайте список из иконок</h2>
+                            <p>Список должен занимать всю ширину родителя, расстояние между последней иконкой и предпоследней должно занимать все свободное пространство. Иконки должны быть прозрачными (png24). В случае если пользователь отключил картинки или они по какой-то причине не загрузились, интерфейс должен отреагировать на это оформленным текстом.</p>
+                            <div class="clearfix">
+                                <ul class="icon-list">
+                                    <li class="icon-list-item">
+                                        <img class="icon-list-item-img" src="images/chrome.png" title="Chrome" alt="" />
+                                        <span class="icon-list-item-alt chrome-alt">ro</span>
+                                    </li>
+                                    <li class="icon-list-item">
+                                        <img class="icon-list-item-img" src="images/ffox.png" title="Firefox" alt="" />
+                                        <span class="icon-list-item-alt firefix-alt">Firefox</span>
+                                    </li>
+                                    <li class="icon-list-item">
+                                        <img class="icon-list-item-img" src="images/opera.png" title="Opera" alt="" />
+                                        <span class="icon-list-item-alt opera-alt">Opera</span>
+                                    </li>
+                                    <li class="icon-list-item">
+                                        <img class="icon-list-item-img" src="images/safari.png" title="Safari" alt="" />
+                                        <span class="icon-list-item-alt safari-alt">Safari</span>
+                                    </li>
+                                    <li class="icon-list-item">
+                                        <img class="icon-list-item-img" src="images/ie.png" title="Internet Explorer" alt="" />
+                                        <span class="icon-list-item-alt ie-alt">Internet<br />Explorer</span>
+                                    </li>                                  
+                                </ul>
+                            </div>
+                        </section>
+                    </article>
+                </div>
+
+            </div> <!-- #main -->
+        </div> <!-- #main-container -->
+
+        <div class="footer-container">
+            <footer class="wrapper">
+                <h3>Руслан Муфтиев</h3>
+            </footer>
+        </div>
+
+    </body>
+</html>
