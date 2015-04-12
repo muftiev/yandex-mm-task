@@ -6,4 +6,7 @@ $(window).load(function() {
     
     $(".main-content").consoleTabs(options);
 
+    $(".consoletabs .ct-nav-item-link").first().addClass("active");
+    $(".consoletabs .ct-tab").first().addClass("active");
+
 });
