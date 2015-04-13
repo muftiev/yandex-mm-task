@@ -51,6 +51,7 @@
 	border-radius: .5em .5em 0 0;
 	background: linear-gradient(to top, rgba(226, 226, 226, 1) 0%, rgba(226, 226, 226, 1) 30%, rgba(242, 242, 242, 1) 70%, rgba(242, 242, 242, 1) 100%);
 	text-align: center;
+	color: grey;
 }
 
 .consoletabs .ct-console-header-nav {
@@ -59,16 +60,46 @@
 }
 
 .consoletabs .ct-console-nav-button {
+	position: relative;
 	width: 1em;
 	height: 1em;
 	margin: 0 0.2em;
 	border: 1px solid rgba(0, 0, 0, 0.1);
 	border-radius: 50%;
+	outline: none;
 	background: linear-gradient(to top, rgba(253,255,180,1) 0%, rgba(253,255,180,1) 30%, rgba(254,255,204,1) 70%, rgba(254,255,204,1) 100%);
 }
 
 .consoletabs .ct-console-nav-button:hover {
 	background: linear-gradient(to top, rgba(253,255,204,1) 0%, rgba(253,255,204,1) 30%, rgba(254,255,235,1) 70%, rgba(254,255,235,1) 100%);
+}
+
+.consoletabs .ct-console-header-nav button[data-action="close"]:after {
+	content: "\00d7";
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	line-height: .9;
+	color: grey;
+}
+
+.consoletabs .ct-console-header-nav button[data-action="hide"]:after {
+	content: "";
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	width: .4em;
+	height: .3em;
+	margin: auto;
+	border-bottom: 2px solid grey;
+}
+
+.consoletabs .ct-console-header-nav button[data-action="hide"].mini:after {
+	border: 1px solid grey;
+	border-top-width: 2px;
 }
 
 .consoletabs .ct-console-input {
@@ -79,6 +110,7 @@
 	background: rgba(255, 255, 255, 0.8);
 	line-height: 1.5;
 	outline: none;
+	color: grey;
 }
 
 .consoletabs .ct-console-output {
@@ -86,6 +118,7 @@
 	padding: 0 10px;
 	border: 1px solid rgb(210, 210, 210);
 	background: rgba(255, 255, 255, 0.8);
+	color: grey;
 }
 
 .consoletabs .ct-container {

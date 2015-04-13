@@ -71,18 +71,17 @@ var has = Object.prototype.hasOwnProperty,
             consNav = divElem.clone()
                 .addClass("ct-console-header-nav");
 
-            consNavButton = inputElem.clone()
+            consNavButton = $("<button/>")
                 .addClass("ct-console-nav-button")
-                .attr("type", "button")
-                .attr("data-action", "close")
-                .attr("title", "закрыть")
-                .prependTo(consNav);
-
-            consNavButton.clone()
                 .attr("data-action", "hide")
                 .attr("title", "свернуть/развернуть")
                 .prependTo(consNav);
 
+            consNavButton.clone()
+                .attr("data-action", "close")
+                .attr("title", "закрыть")
+                .prependTo(consNav);
+                
             consNav.prependTo(consHeader);
             consHeader.appendTo(cons);
 
