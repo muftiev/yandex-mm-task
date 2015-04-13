@@ -27,8 +27,7 @@
 }
 
 .consoletabs .ct-nav-item.active .ct-nav-item-link,
-.consoletabs .ct-nav-item-link:active,
-.consoletabs .ct-nav-item-link:focus {
+.consoletabs .ct-nav-item-link:active {
 	border-bottom-color: rgba(253,255,180,1);	
 	border-top-color: rgba(0, 0, 0, 0.25);
     border-left-color: rgba(0, 0, 0, 0.2);

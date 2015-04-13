@@ -92,6 +92,7 @@ var has = Object.prototype.hasOwnProperty,
 
             inputElem.clone()
                 .addClass("ct-console-input")
+                .attr("tabindex", tabsCount + 1)
                 .attr("placeholder", "введите команду")
                 .appendTo(cons);
 
@@ -112,12 +113,22 @@ var has = Object.prototype.hasOwnProperty,
         },
 
         setEventListeners: function() {
-            var self = this;
+            var self = this,
+                nav = self.nav;
 
             $(window).on("hashchange", function(event) {
                 var index = self._getCurrentTabIndex();
 
                 self._setTab(index);
+            });
+
+            $(nav).on("focusin", function(event) {
+                var target = event.target,
+                    index = target.getAttribute("tabindex");
+
+                if(target.nodeName === "LI" && index && isFinite(index)) {
+                    window.location.hash = "#tab" + index;
+                }
             });
         },
 
