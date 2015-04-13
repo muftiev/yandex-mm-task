@@ -35,6 +35,7 @@ var has = Object.prototype.hasOwnProperty,
             content.each(function(indx, element) {
                 divElem.clone()
                     .addClass("ct-tab")
+                    .attr("data-tabindex", indx + 1)
                     .append(element)
                     .appendTo(container)
             });
@@ -95,6 +96,49 @@ var has = Object.prototype.hasOwnProperty,
                 .appendTo(cons);
 
             cons.appendTo(target);
+
+            self.TABSCOUNT = tabsCount;
+            self.container = container;
+            self.content = container.children();
+            self.nav = nav;     
+            self.cons = cons;       
+        },
+
+        setInitState: function() {
+            var self = this,
+                index = self._getCurrentTabIndex();
+
+            self._setTab(index);
+        },
+
+        setEventListeners: function() {
+            var self = this;
+
+            $(window).on("hashchange", function(event) {
+                var index = self._getCurrentTabIndex();
+
+                self._setTab(index);
+            });
+        },
+
+        _getCurrentTabIndex: function() {
+            var reg = new RegExp(/^#tab\d/),
+                hash = (reg.test(window.location.hash)) ? window.location.hash.match(reg).shift() : null;
+
+            return (hash) ? hash.replace("#tab", "") : NaN;
+        },
+
+        _setTab: function(index) {
+            var self = this,
+                content = $(self.content),
+                nav = self.nav;
+
+            if(index && isFinite(index)) {
+                nav.find(".active").removeClass("active");
+                nav.children().eq(index - 1).addClass("active");
+                content.filter(".active").removeClass("active");
+                content.eq(index - 1).addClass("active");
+            }
         }
     };
 
@@ -106,6 +150,9 @@ jQuery.fn.consoleTabs = function(options) {
 
     consoleTabsObj.init(options);
     consoleTabsObj.build(this);
+    consoleTabsObj.setInitState();
+    consoleTabsObj.setEventListeners();
+
 
     function inherit(proto) {
         function F() {}
