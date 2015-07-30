@@ -13,8 +13,7 @@ var has = Object.prototype.hasOwnProperty,
             var self = this,
                 content = target.children(),
                 tabsCount = content.length,
-                container,            
-                sections,
+                container,
                 nav,
                 navItemTitle,
                 navItemLink,
@@ -102,7 +101,56 @@ var has = Object.prototype.hasOwnProperty,
             self.container = container;
             self.content = container.children();
             self.nav = nav;     
-            self.cons = cons;       
+            self.cons = cons;    
+        },
+
+        consoleInit: function() {
+            var self = this,
+                consoleHist = [],
+                consoleCmds = {};
+
+            consoleCmds.selectTab = function(index) {
+                var tabIndex = parseInt(index, 10),
+                    tabTitle;
+
+                if(!isFinite(tabIndex) || tabIndex < 0 || tabIndex > this.TABSCOUNT - 1) {
+                    return 'Не удалось выбрать таб №' + tabIndex + '. Доступны табы с 0 по ' + (this.TABSCOUNT - 1) + '.';
+                } else {
+                    tabTitle = self.nav.children().eq(tabIndex).find(".ct-nav-item-link").html();
+                    window.location.hash = "#tab" + (tabIndex + 1);
+                    return 'Выбран таб №' + tabIndex + ' "' + tabTitle + '".';
+                }
+            };
+
+            consoleCmds.swapTabs = function(index1, index2) {
+                var navTabs = self.nav.children,
+                    tabIndex1 = parseInt(index1, 10),
+                    tabIndex2 = parseInt(index2, 10),
+                    nav = self.nav,
+                    tabEl1 = nav.children().eq(tabIndex1),
+                    tabEl2 = nav.children().eq(tabIndex2),
+                    prevTabEl1 = (tabIndex1 > 0) ? $(nav.children().eq[tabIndex2 - 1]) : null,
+                    tabTitle1, tabTitle2;
+
+                if((!isFinite(tabIndex1) || tabIndex1 < 0 || tabIndex1 > self.TABSCOUNT) ||
+                    (!isFinite(tabIndex2) || tabIndex2 < 0 || tabIndex2 > self.TABSCOUNT)) {
+                    return 'Не правильный номер таба. Доступны табы с 0 по ' + (self.TABSCOUNT - 1) + '.';
+                } else {
+                    tabTitle1 = tabEl1.find(".ct-nav-item-link").html();
+                    tabTitle2 = tabEl2.find(".ct-nav-item-link").html();
+                    tabEl1.detach().insertAfter(tabEl2);
+                    tabEl2.detach();
+                    if(prevTabEl1) {
+                        tabEl2.insertAfter(prevTabEl1);
+                    } else {
+                        tabEl2.prependTo(nav);
+                    }
+                    return 'Поменяли табы №' + tabIndex1 + ' "' + tabTitle1 + '" и №' + tabIndex2 + ' "' + tabTitle2 + '" местами.';
+                }
+            }
+
+            self.consoleHist = consoleHist;
+            self.consoleCmds = consoleCmds;
         },
 
         setInitState: function() {
@@ -114,7 +162,10 @@ var has = Object.prototype.hasOwnProperty,
 
         setEventListeners: function() {
             var self = this,
-                nav = self.nav;
+                nav = self.nav,
+                cons = self.cons,
+                consInput = cons.find(".ct-console-input"),
+                consOutput = cons.find(".ct-console-output");
 
             $(window).on("hashchange", function(event) {
                 var index = self._getCurrentTabIndex();
@@ -129,6 +180,19 @@ var has = Object.prototype.hasOwnProperty,
                 if(target.nodeName === "LI" && index && isFinite(index)) {
                     window.location.hash = "#tab" + index;
                 }
+            });
+
+            consInput.on("keypress", function(event) {
+                if(event.charCode === 13) {
+                    var target = event.target,
+                        cmdStr = target.value,
+                        result;
+
+                    target.value = "";
+                    result = self._cmdExecute(cmdStr);
+                    consOutput.html(result);
+                    console.log(cmdStr);
+                }                
             });
         },
 
@@ -150,7 +214,25 @@ var has = Object.prototype.hasOwnProperty,
                 content.filter(".active").removeClass("active");
                 content.eq(index - 1).addClass("active");
             }
+        },
+
+        _cmdExecute: function(cmdStr) {
+            var self = this,
+                cmdFuncRegExp = /^([_A-Z]\w*)\((\w+|(\w+,\s*)+\w+)*\)$/i,
+                matchRes = cmdStr.match(cmdFuncRegExp),
+                cmdName = (Array.isArray(matchRes) && matchRes[1]) ? matchRes[1] : null,
+                cmdArgs = (Array.isArray(matchRes) && matchRes[2]) ? matchRes[2] : "",
+                cmd;
+
+            if(!matchRes || !has.call(self.consoleCmds, cmdName)) {
+                return "Нет такой команды";
+            } else {
+                cmd = self.consoleCmds[cmdName];
+                cmdArgs = cmdArgs.match(/(\w+)/g) || [];
+                return cmd.apply(self, cmdArgs);
+            }
         }
+        
     };
 
 jQuery.fn.consoleTabs = function(options) {
@@ -161,6 +243,7 @@ jQuery.fn.consoleTabs = function(options) {
 
     consoleTabsObj.init(options);
     consoleTabsObj.build(this);
+    consoleTabsObj.consoleInit();
     consoleTabsObj.setInitState();
     consoleTabsObj.setEventListeners();
 
