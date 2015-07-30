@@ -34,7 +34,7 @@ var has = Object.prototype.hasOwnProperty,
             content.each(function(indx, element) {
                 divElem.clone()
                     .addClass("ct-tab")
-                    .attr("data-tabindex", indx + 1)
+                    .attr("data-tabindex", indx)
                     .append(element)
                     .appendTo(container)
             });
@@ -49,7 +49,7 @@ var has = Object.prototype.hasOwnProperty,
 
                 navItemLink = aElem.clone()
                     .addClass("ct-nav-item-link")
-                    .attr("href", "#tab" + (i + 1))
+                    .attr("href", "#tab" + (i))
                     .html(navItemTitle);
 
                 liElem.clone()
@@ -116,20 +116,18 @@ var has = Object.prototype.hasOwnProperty,
                 if(!isFinite(tabIndex) || tabIndex < 0 || tabIndex > this.TABSCOUNT - 1) {
                     return 'Не удалось выбрать таб №' + tabIndex + '. Доступны табы с 0 по ' + (this.TABSCOUNT - 1) + '.';
                 } else {
-                    tabTitle = self.nav.children().eq(tabIndex).find(".ct-nav-item-link").html();
-                    window.location.hash = "#tab" + (tabIndex + 1);
+                    tabTitle = self.nav.find("[tabindex=" + (tabIndex + 1) + "] .ct-nav-item-link").html();
+                    window.location.hash = "#tab" + (tabIndex);
                     return 'Выбран таб №' + tabIndex + ' "' + tabTitle + '".';
                 }
             };
 
             consoleCmds.swapTabs = function(index1, index2) {
-                var navTabs = self.nav.children,
-                    tabIndex1 = parseInt(index1, 10),
+                var tabIndex1 = parseInt(index1, 10),
                     tabIndex2 = parseInt(index2, 10),
-                    nav = self.nav,
-                    tabEl1 = nav.children().eq(tabIndex1),
-                    tabEl2 = nav.children().eq(tabIndex2),
-                    prevTabEl1 = (tabIndex1 > 0) ? $(nav.children().eq[tabIndex2 - 1]) : null,
+                    navTabs = self.nav.children(),
+                    tabEl1 = navTabs.filter("[tabindex=" + (tabIndex1 + 1) + "]"),
+                    tabEl2 = navTabs.filter("[tabindex=" + (tabIndex2 + 1) + "]"),
                     tabTitle1, tabTitle2;
 
                 if((!isFinite(tabIndex1) || tabIndex1 < 0 || tabIndex1 > self.TABSCOUNT) ||
@@ -138,24 +136,98 @@ var has = Object.prototype.hasOwnProperty,
                 } else {
                     tabTitle1 = tabEl1.find(".ct-nav-item-link").html();
                     tabTitle2 = tabEl2.find(".ct-nav-item-link").html();
-                    tabEl1.detach().insertAfter(tabEl2);
-                    tabEl2.detach();
-                    if(prevTabEl1) {
-                        tabEl2.insertAfter(prevTabEl1);
-                    } else {
-                        tabEl2.prependTo(nav);
-                    }
+                    tabEl1.replaceWith(tabEl2.clone());
+                    tabEl2.replaceWith(tabEl1);
+
                     return 'Поменяли табы №' + tabIndex1 + ' "' + tabTitle1 + '" и №' + tabIndex2 + ' "' + tabTitle2 + '" местами.';
                 }
-            }
+            };
+
+            consoleCmds.showStat = function() {
+                var stat = self.timeTracker.getStat(),
+                    output = "Общее время работы со страницей: " + stat.sum + "<br/>";
+
+                output += "Детализация времени просмотра табов:<br/>";
+                output = stat.tabs.reduce(function(result, element, indx) {
+                    var title = self.nav.find("[tabindex=" + (indx + 1) + "] .ct-nav-item-link").html()
+                    result += indx + ' "' + title + '": ' + element + "<br/>";
+
+                    return result;
+                }, output);
+
+                return output;
+            };
+
+            consoleCmds.help = function() {
+                return 'selectTab(tabIndex) - выбор таба с индексом tabIndex<br>' +
+                    'swapTabs(tabIndex1, tabIndex2) - поменять местами в DOM табы tabIndex1 и tabIndex2<br>' +
+                    'showStat() - показать статистику <br>';
+            };
 
             self.consoleHist = consoleHist;
+            self.consoleHistCurIndex = -1;
             self.consoleCmds = consoleCmds;
         },
 
         setInitState: function() {
             var self = this,
-                index = self._getCurrentTabIndex();
+                index = self._getHashTabIndex();
+
+            self.timeTracker = function() {
+                var start = Date.now(),
+                    point = start,
+                    trackers = [],
+                    current = index,
+                    _formatTime = function(time) {
+                        var start = new Date(0),
+                            result = "",
+                            years, monthes, days, hours, minutes, seconds;
+
+                        start.setMilliseconds(time);
+                        years = start.getYear() - 70;
+                        monthes = start.getMonth();
+                        days = start.getDate() - 1;
+                        hours = start.getHours() - 3;
+                        minutes = start.getMinutes();
+                        seconds = start.getSeconds();
+                        if(years) result += years + " лет ";
+                        if(monthes) result += monthes + " месяцев ";
+                        if(days) result += days + " дней ";
+                        if(hours) result += hours + " часов ";
+                        if(minutes) result += minutes + " минут ";
+                        if(seconds) result += seconds + " секунд ";
+
+                        return result;
+                    };
+
+                return {
+                    trackTime: function(indx) {
+                        var now = Date.now(),
+                            old = trackers[current] || 0,
+                            time = now - point;
+
+                        trackers[current] = old + time;
+                        point = now;
+                        current = indx;
+                    },
+                    getStat: function() {
+                        var now = Date.now(),
+                            old = trackers[current] || 0,
+                            time = now - point,
+                            sum = now - start;
+
+                        trackers[current] = old + time;
+                        point = now;
+
+                        return {
+                            tabs: trackers.map(function(element) {
+                                return _formatTime(element);
+                            }),
+                            sum: _formatTime(sum)
+                        }
+                    }
+                }
+            }();
 
             self._setTab(index);
         },
@@ -168,7 +240,7 @@ var has = Object.prototype.hasOwnProperty,
                 consOutput = cons.find(".ct-console-output");
 
             $(window).on("hashchange", function(event) {
-                var index = self._getCurrentTabIndex();
+                var index = self._getHashTabIndex();
 
                 self._setTab(index);
             });
@@ -177,30 +249,50 @@ var has = Object.prototype.hasOwnProperty,
                 var target = event.target,
                     index = target.getAttribute("tabindex");
 
-                if(target.nodeName === "LI" && index && isFinite(index)) {
-                    window.location.hash = "#tab" + index;
+                if(target.nodeName === "LI" && isFinite(index)) {
+                    window.location.hash = "#tab" + (index - 1);
                 }
             });
 
-            consInput.on("keypress", function(event) {
-                if(event.charCode === 13) {
-                    var target = event.target,
-                        cmdStr = target.value,
-                        result;
+            consInput.on("keyup", function(event) {
+                var target = event.target,
+                    cmdStr = target.value,
+                    newCmdStr,
+                    result;
 
-                    target.value = "";
-                    result = self._cmdExecute(cmdStr);
-                    consOutput.html(result);
-                    console.log(cmdStr);
-                }                
+                switch(event.keyCode) {
+                    case 13:
+                        target.value = "";
+                        result = self._cmdExecute(cmdStr);
+                        self.consoleHist.push(cmdStr);
+                        self.consoleHistCurIndex = -1;
+                        consOutput.append("/> " + cmdStr + "<br/>" + result + "<br/>");
+                        consOutput.scrollTop(consOutput.prop('scrollHeight'));
+                        break;
+                    case 38:
+                        newCmdStr = self._getPrevCmd();
+                        if(newCmdStr) {
+                            target.value = newCmdStr;
+                        }
+                        break;
+                    case 40:
+                        newCmdStr = self._getNextCmd();
+                        if(newCmdStr) {
+                            target.value = newCmdStr;
+                        }
+                        break;
+                    default:
+                        self.consoleHistCurIndex = -1;
+                        break;
+                }
             });
         },
 
-        _getCurrentTabIndex: function() {
+        _getHashTabIndex: function() {
             var reg = new RegExp(/^#tab\d/),
                 hash = (reg.test(window.location.hash)) ? window.location.hash.match(reg).shift() : null;
 
-            return (hash) ? hash.replace("#tab", "") : NaN;
+            return (hash) ? hash.replace("#tab", "") : 0;
         },
 
         _setTab: function(index) {
@@ -208,11 +300,12 @@ var has = Object.prototype.hasOwnProperty,
                 content = $(self.content),
                 nav = self.nav;
 
-            if(index && isFinite(index)) {
+            if(isFinite(index)) {
+                self.timeTracker.trackTime(index);
                 nav.find(".active").removeClass("active");
-                nav.children().eq(index - 1).addClass("active");
+                nav.find("[tabindex=" + (+index + 1) + "]").addClass("active");
                 content.filter(".active").removeClass("active");
-                content.eq(index - 1).addClass("active");
+                content.filter("[data-tabindex=" + index + "]").addClass("active");
             }
         },
 
@@ -231,12 +324,46 @@ var has = Object.prototype.hasOwnProperty,
                 cmdArgs = cmdArgs.match(/(\w+)/g) || [];
                 return cmd.apply(self, cmdArgs);
             }
+        },
+
+        _getPrevCmd: function() {
+            var self = this,
+                consoleHistCurIndex = self.consoleHistCurIndex,
+                consoleHistLength = self.consoleHist.length,
+                newConsoleHistCurIndex,
+                newCmdStr;
+
+            if(!consoleHistLength) {
+                return false;
+            }
+            newConsoleHistCurIndex = (consoleHistCurIndex <= 0 || consoleHistCurIndex > (consoleHistLength - 1))
+                ? consoleHistLength - 1
+                : consoleHistCurIndex - 1;
+            newCmdStr = self.consoleHist[newConsoleHistCurIndex];
+            self.consoleHistCurIndex = newConsoleHistCurIndex;
+            return newCmdStr;
+        },
+
+        _getNextCmd: function() {
+            var self = this,
+                consoleHistCurIndex = self.consoleHistCurIndex,
+                consoleHistLength = self.consoleHist.length,
+                newConsoleHistCurIndex,
+                newCmdStr;
+
+            if(!consoleHistLength) {
+                return false;
+            }
+            newConsoleHistCurIndex = (consoleHistCurIndex >= (consoleHistLength - 1)) ? 0 : consoleHistCurIndex + 1;
+            newCmdStr = self.consoleHist[newConsoleHistCurIndex];
+            self.consoleHistCurIndex = newConsoleHistCurIndex;
+            return newCmdStr;
         }
         
     };
 
-jQuery.fn.consoleTabs = function(options) {
-    var options = options || {},
+jQuery.fn.consoleTabs = function(params) {
+    var options = params || {},
         consoleTabsObj = inherit(consoleTabs);
 
     if(this.hasClass("consoletabs")) return false;
