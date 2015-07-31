@@ -73,7 +73,7 @@
 	background: linear-gradient(to top, rgba(253,255,204,1) 0%, rgba(253,255,204,1) 30%, rgba(254,255,235,1) 70%, rgba(254,255,235,1) 100%);
 }
 
-.consoletabs .ct-console-header-nav button[data-action="close"]:after {
+.consoletabs .ct-console-header-nav button.action-open-close:after {
 	content: "\00d7";
 	position: absolute;
 	top: 0;
@@ -81,9 +81,18 @@
 	right: 0;
 	line-height: .9;
 	color: grey;
+
+    -webkit-transition: all 0.3s ease-out;
+    transition: all 0.3s ease-out;
 }
 
-.consoletabs .ct-console-header-nav button[data-action="hide"]:after {
+.consoletabs .ct-console-header-nav button[data-action="open"]:after {
+	-webkit-transform: rotate(45deg);
+	-ms-transform: rotate(45deg);
+	transform: rotate(45deg);
+}
+
+.consoletabs .ct-console-header-nav button.action-show-hide:after {
 	content: "";
 	position: absolute;
 	top: 0;
@@ -91,13 +100,16 @@
 	left: 0;
 	right: 0;
 	width: .4em;
-	height: .3em;
+	height: 0;
 	margin: auto;
-	border-bottom: 2px solid grey;
+    border: 1px solid grey;
+
+    -webkit-transition: all 0.3s ease-out;
+    transition: all 0.3s ease-out;
 }
 
-.consoletabs .ct-console-header-nav button[data-action="hide"].mini:after {
-	border: 1px solid grey;
+.consoletabs .ct-console-header-nav button[data-action="show"]:after {
+    height: .3em;
 	border-top-width: 2px;
 }
 

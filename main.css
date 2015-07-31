@@ -129,7 +129,8 @@ body {
 }
 
 .star-rating {
-    direction: rtl;       
+    direction: rtl;
+    letter-spacing: -0.1em;
 }
 
 .star-rating .star-rating-container {

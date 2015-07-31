@@ -1,6 +1,10 @@
 var has = Object.prototype.hasOwnProperty,
     consoleTabs = {
 
+        /**
+         * Инициализация плагина - подмешивание свойст из объекта настроек
+         * @param options - объект настроек
+         */
         init: function(options) {
             for (var prop in options) {
                 if (has.call(options, prop)) {
@@ -9,6 +13,10 @@ var has = Object.prototype.hasOwnProperty,
             }
         },
 
+        /**
+         * Модификация DOM - создание всех элементов интерфейса
+         * @param target - элемент, на который тнициализируется плагин
+         */
         build: function(target) {
             var self = this,
                 content = target.children(),
@@ -19,6 +27,9 @@ var has = Object.prototype.hasOwnProperty,
                 navItemLink,
                 navTitles = (has.call(self, "navTitles") && Array.isArray(self.navTitles)) ? self.navTitles : [],
                 cons,
+                consHeader,
+                consNav,
+                consNavButton,
                 divElem = $("<div/>"),
                 liElem = $("<li/>"),
                 aElem = $("<a/>"),
@@ -36,7 +47,7 @@ var has = Object.prototype.hasOwnProperty,
                     .addClass("ct-tab")
                     .attr("data-tabindex", indx)
                     .append(element)
-                    .appendTo(container)
+                    .appendTo(container);
             });
 
             container.appendTo(target);
@@ -78,15 +89,19 @@ var has = Object.prototype.hasOwnProperty,
                 .prependTo(consNav);
 
             consNavButton.clone()
+                .addClass("action-open-close")
                 .attr("data-action", "close")
                 .attr("title", "закрыть")
                 .prependTo(consNav);
+
+            consNavButton.addClass("action-show-hide");
                 
             consNav.prependTo(consHeader);
             consHeader.appendTo(cons);
 
             divElem.clone()
                 .addClass("ct-console-output")
+                .html("Используйте команду help() для справки<br/>")
                 .appendTo(cons);
 
             inputElem.clone()
@@ -104,11 +119,19 @@ var has = Object.prototype.hasOwnProperty,
             self.cons = cons;    
         },
 
+        /**
+         * Инициализация консоли
+         */
         consoleInit: function() {
             var self = this,
                 consoleHist = [],
                 consoleCmds = {};
 
+            /**
+             * Метод консоли - выбор таба по номеру
+             * @param index - номер таба
+             * @return string - результат операции для вывода в консоль
+             */
             consoleCmds.selectTab = function(index) {
                 var tabIndex = parseInt(index, 10),
                     tabTitle;
@@ -122,6 +145,12 @@ var has = Object.prototype.hasOwnProperty,
                 }
             };
 
+            /**
+             * Метод консоли - меняет таб местами
+             * @param index1 - номер первого таба
+             * @param index2 - номер второго таба
+             * @return string - результат операции для вывода в консоль
+             */
             consoleCmds.swapTabs = function(index1, index2) {
                 var tabIndex1 = parseInt(index1, 10),
                     tabIndex2 = parseInt(index2, 10),
@@ -143,21 +172,29 @@ var has = Object.prototype.hasOwnProperty,
                 }
             };
 
+            /**
+             * Метод консоли - показывает статистику времени
+             * @return string - результат операции для вывода в консоль
+             */
             consoleCmds.showStat = function() {
                 var stat = self.timeTracker.getStat(),
                     output = "Общее время работы со страницей: " + stat.sum + "<br/>";
 
                 output += "Детализация времени просмотра табов:<br/>";
                 output = stat.tabs.reduce(function(result, element, indx) {
-                    var title = self.nav.find("[tabindex=" + (indx + 1) + "] .ct-nav-item-link").html()
-                    result += indx + ' "' + title + '": ' + element + "<br/>";
+                    var title = self.nav.find("[tabindex=" + (indx + 1) + "] .ct-nav-item-link").html();
 
+                    result += indx + ' "' + title + '": ' + element + "<br/>";
                     return result;
                 }, output);
 
                 return output;
             };
 
+            /**
+             * Метод консоли - выводит справку по существующим командам
+             * @return string - результат операции для вывода в консоль
+             */
             consoleCmds.help = function() {
                 return 'selectTab(tabIndex) - выбор таба с индексом tabIndex<br>' +
                     'swapTabs(tabIndex1, tabIndex2) - поменять местами в DOM табы tabIndex1 и tabIndex2<br>' +
@@ -169,10 +206,17 @@ var has = Object.prototype.hasOwnProperty,
             self.consoleCmds = consoleCmds;
         },
 
+        /**
+         * Определение изначального состояния плагина
+         */
         setInitState: function() {
             var self = this,
                 index = self._getHashTabIndex();
 
+            /**
+             * Инициализация таймера для учета статистики
+             * @return object - апи для работы с таймером
+             */
             self.timeTracker = function() {
                 var start = Date.now(),
                     point = start,
@@ -180,7 +224,7 @@ var has = Object.prototype.hasOwnProperty,
                     current = index,
                     _formatTime = function(time) {
                         var start = new Date(0),
-                            result = "",
+                            result = [],
                             years, monthes, days, hours, minutes, seconds;
 
                         start.setMilliseconds(time);
@@ -190,14 +234,14 @@ var has = Object.prototype.hasOwnProperty,
                         hours = start.getHours() - 3;
                         minutes = start.getMinutes();
                         seconds = start.getSeconds();
-                        if(years) result += years + " лет ";
-                        if(monthes) result += monthes + " месяцев ";
-                        if(days) result += days + " дней ";
-                        if(hours) result += hours + " часов ";
-                        if(minutes) result += minutes + " минут ";
-                        if(seconds) result += seconds + " секунд ";
+                        if(years) result.push(years + " лет");
+                        if(monthes) result.push(monthes + " месяцев");
+                        if(days) result.push(days + " дней");
+                        if(hours) result.push(hours + " часов");
+                        if(minutes) result.push(minutes + " минут");
+                        if(seconds) result.push(seconds + " секунд");
 
-                        return result;
+                        return result.join(" ");
                     };
 
                 return {
@@ -224,27 +268,37 @@ var has = Object.prototype.hasOwnProperty,
                                 return _formatTime(element);
                             }),
                             sum: _formatTime(sum)
-                        }
+                        };
                     }
-                }
+                };
             }();
 
             self._setTab(index);
         },
 
+        /**
+         * Определение обработчиков событий
+         */
         setEventListeners: function() {
             var self = this,
                 nav = self.nav,
                 cons = self.cons,
+                consNav = cons.find(".ct-console-nav-button"),
                 consInput = cons.find(".ct-console-input"),
                 consOutput = cons.find(".ct-console-output");
 
-            $(window).on("hashchange", function(event) {
+            /**
+             * Событие изменения хеша в адресной строке
+             */
+            $(window).on("hashchange", function() {
                 var index = self._getHashTabIndex();
 
                 self._setTab(index);
             });
 
+            /**
+             * Событие фокуса на табе при использовании клавиши tab
+             */
             $(nav).on("focusin", function(event) {
                 var target = event.target,
                     index = target.getAttribute("tabindex");
@@ -254,6 +308,9 @@ var has = Object.prototype.hasOwnProperty,
                 }
             });
 
+            /**
+             * Событие поднятия клавиши в командной строке консоли
+             */
             consInput.on("keyup", function(event) {
                 var target = event.target,
                     cmdStr = target.value,
@@ -261,7 +318,7 @@ var has = Object.prototype.hasOwnProperty,
                     result;
 
                 switch(event.keyCode) {
-                    case 13:
+                    case 13: // клавиша enter
                         target.value = "";
                         result = self._cmdExecute(cmdStr);
                         self.consoleHist.push(cmdStr);
@@ -269,32 +326,72 @@ var has = Object.prototype.hasOwnProperty,
                         consOutput.append("/> " + cmdStr + "<br/>" + result + "<br/>");
                         consOutput.scrollTop(consOutput.prop('scrollHeight'));
                         break;
-                    case 38:
+                    case 38: // клавиша arrowUp
                         newCmdStr = self._getPrevCmd();
                         if(newCmdStr) {
                             target.value = newCmdStr;
                         }
                         break;
-                    case 40:
+                    case 40: // клавиша arrowDown
                         newCmdStr = self._getNextCmd();
                         if(newCmdStr) {
                             target.value = newCmdStr;
                         }
                         break;
-                    default:
+                    default: // все остальные клавиши
                         self.consoleHistCurIndex = -1;
+                        break;
+                }
+            });
+
+            /**
+             * Событие клика по кнопкам отображения консоли
+             */
+            consNav.on("click", function(event) {
+                var target = event.target,
+                    action = (target.dataset && has.call(target.dataset, "action")) ? target.dataset.action : null;
+
+                if (!action) return false;
+                switch(action) {
+                    case "close":
+                        consInput.hide();
+                        consOutput.hide();
+                        target.dataset.action = "open";
+                        target.nextElementSibling.dataset.action = "show";
+                        break;
+                    case "hide":
+                        consOutput.hide();
+                        target.dataset.action = "show";
+                        break;
+                    case "open":
+                        consInput.show();
+                        consOutput.show();
+                        target.dataset.action = "close";
+                        target.nextElementSibling.dataset.action = "hide";
+                        break;
+                    case "show":
+                        consOutput.show();
+                        target.dataset.action = "hide";
                         break;
                 }
             });
         },
 
+        /**
+         * Приватный метод получения номера таба из хеша
+         * @return int - номера таба (по-умолчанию 0)
+         */
         _getHashTabIndex: function() {
             var reg = new RegExp(/^#tab\d/),
                 hash = (reg.test(window.location.hash)) ? window.location.hash.match(reg).shift() : null;
 
-            return (hash) ? hash.replace("#tab", "") : 0;
+            return (hash) ? parseInt(hash.replace("#tab", ""), 10) : 0;
         },
 
+        /**
+         * Приватный метод переключения таба по номеру
+         * @param index - номер таба
+         */
         _setTab: function(index) {
             var self = this,
                 content = $(self.content),
@@ -309,6 +406,11 @@ var has = Object.prototype.hasOwnProperty,
             }
         },
 
+        /**
+         * Приватный метод выполнения команды
+         * @param cmdStr - введенная команда
+         * @return function result - результат выполнения команды
+         */
         _cmdExecute: function(cmdStr) {
             var self = this,
                 cmdFuncRegExp = /^([_A-Z]\w*)\((\w+|(\w+,\s*)+\w+)*\)$/i,
@@ -326,6 +428,10 @@ var has = Object.prototype.hasOwnProperty,
             }
         },
 
+        /**
+         * Приватный метод получения предыдущей команды
+         * @return string - предыдущая команда
+         */
         _getPrevCmd: function() {
             var self = this,
                 consoleHistCurIndex = self.consoleHistCurIndex,
@@ -344,6 +450,10 @@ var has = Object.prototype.hasOwnProperty,
             return newCmdStr;
         },
 
+        /**
+         * Приватный метод получения следующей команды
+         * @return string - следующая команда
+         */
         _getNextCmd: function() {
             var self = this,
                 consoleHistCurIndex = self.consoleHistCurIndex,
@@ -362,7 +472,7 @@ var has = Object.prototype.hasOwnProperty,
         
     };
 
-jQuery.fn.consoleTabs = function(params) {
+$.fn.consoleTabs = function(params) {
     var options = params || {},
         consoleTabsObj = inherit(consoleTabs);
 
