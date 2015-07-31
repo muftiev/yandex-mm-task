@@ -1,0 +1,157 @@
+.consoletabs .ct-nav {
+	position: relative;
+	bottom: -1px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.consoletabs .ct-nav-item {
+	display: inline-block;
+	margin: 0;
+	padding: 0;
+	outline: none;
+}
+
+.consoletabs .ct-nav-item-link {
+	display: block;
+	margin: 0;
+	padding: 0 2em;
+	border: 1px solid rgb(210, 210, 210);
+	border-bottom-color: rgb(226, 226, 226);
+	border-radius: 1em 1em 0 0;
+	outline: none;
+	background: linear-gradient(to top, rgba(226, 226, 226, 1) 0%, rgba(226, 226, 226, 1) 30%, rgba(242, 242, 242, 1) 70%, rgba(242, 242, 242, 1) 100%);
+	text-decoration: none;
+	color: black;
+}
+
+.consoletabs .ct-nav-item.active .ct-nav-item-link,
+.consoletabs .ct-nav-item-link:active {
+	border-bottom-color: rgba(253,255,180,1);	
+	border-top-color: rgba(0, 0, 0, 0.25);
+    border-left-color: rgba(0, 0, 0, 0.2);
+    border-right-color: rgba(0, 0, 0, 0.2);
+	background: linear-gradient(to top, rgba(253,255,180,1) 0%, rgba(253,255,180,1) 30%, rgba(254,255,204,1) 70%, rgba(254,255,204,1) 100%);
+}
+
+.consoletabs .ct-nav-item .ct-nav-item-link:hover {
+	border-bottom-color: rgba(253,255,204,1);	
+	background: linear-gradient(to top, rgba(253,255,204,1) 0%, rgba(253,255,204,1) 30%, rgba(254,255,235,1) 70%, rgba(254,255,235,1) 100%);
+}
+
+.consoletabs .ct-console {
+	margin-top: 20px;
+}
+
+.consoletabs .ct-console-header {
+	border: 1px solid rgb(210, 210, 210);
+	border-bottom: 1px solid rgb(226, 226, 226);
+	border-radius: .5em .5em 0 0;
+	background: linear-gradient(to top, rgba(226, 226, 226, 1) 0%, rgba(226, 226, 226, 1) 30%, rgba(242, 242, 242, 1) 70%, rgba(242, 242, 242, 1) 100%);
+	text-align: center;
+	color: grey;
+}
+
+.consoletabs .ct-console-header-nav {
+	float: left;
+	padding: 0 0.5em;
+}
+
+.consoletabs .ct-console-nav-button {
+	position: relative;
+	width: 1em;
+	height: 1em;
+	margin: 0 0.2em;
+	border: 1px solid rgba(0, 0, 0, 0.1);
+	border-radius: 50%;
+	outline: none;
+	background: linear-gradient(to top, rgba(253,255,180,1) 0%, rgba(253,255,180,1) 30%, rgba(254,255,204,1) 70%, rgba(254,255,204,1) 100%);
+}
+
+.consoletabs .ct-console-nav-button:hover {
+	background: linear-gradient(to top, rgba(253,255,204,1) 0%, rgba(253,255,204,1) 30%, rgba(254,255,235,1) 70%, rgba(254,255,235,1) 100%);
+}
+
+.consoletabs .ct-console-header-nav button.action-open-close:after {
+	content: "\00d7";
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	line-height: .9;
+	color: grey;
+
+    -webkit-transition: all 0.3s ease-out;
+    transition: all 0.3s ease-out;
+}
+
+.consoletabs .ct-console-header-nav button[data-action="open"]:after {
+	-webkit-transform: rotate(45deg);
+	-ms-transform: rotate(45deg);
+	transform: rotate(45deg);
+}
+
+.consoletabs .ct-console-header-nav button.action-show-hide:after {
+	content: "";
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	width: .4em;
+	height: 0;
+	margin: auto;
+    border: 1px solid grey;
+
+    -webkit-transition: all 0.3s ease-out;
+    transition: all 0.3s ease-out;
+}
+
+.consoletabs .ct-console-header-nav button[data-action="show"]:after {
+    height: .3em;
+	border-top-width: 2px;
+}
+
+.consoletabs .ct-console-input {
+	box-sizing: border-box;
+	width: 100%;
+	padding: 0 10px;
+	border: 1px solid rgb(210, 210, 210);
+	background: rgba(255, 255, 255, 0.8);
+	line-height: 1.5;
+	outline: none;
+	color: grey;
+}
+
+.consoletabs .ct-console-output {
+	height: 12.5em;
+	padding: 0 10px;
+	overflow: auto;
+	border: 1px solid rgb(210, 210, 210);
+	background: rgba(255, 255, 255, 0.8);
+	color: grey;
+}
+
+.consoletabs .ct-container {
+	margin: 0;
+	padding: 10px;
+	border: 1px solid rgb(210, 210, 210);
+}
+
+.consoletabs .ct-tab {
+	display: none;
+}
+
+.consoletabs .ct-tab.active {
+	display: block;
+}
+
+.unselectable *{
+    -moz-user-select:none;
+    -webkit-user-select:none;
+    -o-user-select:none;
+    -ms-user-select:none;
+    user-select:none;
+    cursor: pointer;
+}
