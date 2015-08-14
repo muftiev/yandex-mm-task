@@ -60,7 +60,12 @@ body {
     ALL: Theme
    =================== */
 
+html {
+    height: 100%;
+}
+
 body {
+    position: relative;
     background-image: url('images/bg.jpg');
     background-color: rgba(54, 255, 36, 0.9);
     background-repeat: no-repeat;
@@ -75,6 +80,9 @@ body {
 }
 
 .footer-container {
+    position: absolute;
+    bottom: 0;
+    height: 4em;
     border-top: 20px solid #e44d26;
 }
 
@@ -86,6 +94,10 @@ body {
 
 .header-container .title {
     color: white;
+}
+
+.main-container {
+    padding-bottom: 4em;
 }
 
 .main-content {
@@ -110,7 +122,7 @@ body {
 
 .footer-container footer {    
     color: white;
-    padding: 20px 0;        
+    padding: 0;
 }
 
 /* ==========================================================================
